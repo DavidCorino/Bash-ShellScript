@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ ! -s ~/.ssh/id_rsa.pub ]; then
+   ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
+fi
+
+if [ -s ~/.ssh/id_rsa.pub ]; then
+   for ip in `cat /root/Monitoramento/bin/servers-list`; do
+#    for ip in `cat bin/qradar`; do
+      sshpass -p "" ssh-copy-id -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no user@$ip -f
+   done
+else
+   echo "Chave SSH não encontrada!"
+fi
+
+ansible all -i servers-list -m ping -o
